@@ -1,3 +1,5 @@
+
+
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
@@ -20,7 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODEL = tf.keras.layers.TFSMLayer("../models/3", call_endpoint='serving_default')
+MODEL = tf.keras.models.load_model("../models/1")
 
 CLASS_NAMES = ["Early Blight", "Late Blight", "Healthy"]
 
@@ -39,7 +41,7 @@ async def predict(
     image = read_file_as_image(await file.read())
     img_batch = np.expand_dims(image, 0)
     
-    predictions = MODEL(img_batch)
+    predictions = MODEL.predict(img_batch)
 
     predicted_class = CLASS_NAMES[np.argmax(predictions[0])]
     confidence = np.max(predictions[0])
